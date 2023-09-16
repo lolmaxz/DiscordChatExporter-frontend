@@ -49,6 +49,9 @@ class JsonProcessor:
 		"""
 		channel["_id"] = pad_id(channel.pop("id"))
 		channel["categoryId"] = pad_id(channel["categoryId"])
+		# added pad_id for parentCategoryId
+		if "parentCategoryId" in channel:
+			channel["parentCategoryId"] = pad_id(channel["parentCategoryId"])
 		channel["guildId"] = guild_id
 		return channel
 

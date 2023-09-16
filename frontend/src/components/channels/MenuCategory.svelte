@@ -57,10 +57,13 @@
 	}
 </script>
 
-<div class="category" on:click={() => (isOpen = !isOpen)} on:contextmenu|preventDefault={(e) => onRightClick(e, categoryId)}>
-	<div class="icon-dropdown {isOpen? '' : 'rotate'}"><IconDropdown size={13}/></div>
-	{categoryName}
-</div>
+<!-- categoryId 1 if made up category id for channels without category (those at the top of the channel list) -->
+{#if categoryId !== "999"}
+	<div class="category" on:click={() => (isOpen = !isOpen)} on:contextmenu|preventDefault={(e) => onRightClick(e, categoryId)}>
+		<div class="icon-dropdown {isOpen? '' : 'rotate'}"><IconDropdown size={13}/></div>
+		{categoryName}
+	</div>
+{/if}
 {#if isOpen}
 	{#each channels as channel}
 		<div class="channel">
@@ -71,6 +74,8 @@
 				isSelected={selectedChannelId == channel._id}
 				threadCount={channel?.threads?.length ?? 0}
 				type={channel.type}
+				nsfw={channel.nsfw}
+				isRulesChannel={channel.isRulesChannel ?? null}
 			/>
 			{#if [channel._id, ...(channel.threads ? channel.threads.map(thread => thread._id) : [])].includes(selectedChannelId)}
 				{#if channel.threads}

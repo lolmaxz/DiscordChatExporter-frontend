@@ -1,8 +1,18 @@
 <script>
 	import IconChannel from 'src/components/icons/IconChannel.svelte';
 	import IconChannelWithThreads from 'src/components/icons/IconChannelWithThreads.svelte';
+	import IconChannelNsfw from 'src/components/icons/IconChannelNsfw.svelte';
+	import IconChannelWithThreadsNsfw from 'src/components/icons/IconChannelWithThreadsNsfw.svelte';
 	import IconVoiceChannel from 'src/components/icons/IconVoiceChannel.svelte';
+	import IconVoiceChannelNsfw from 'src/components/icons/IconVoiceChannelNsfw.svelte';
+	import IconForumChannel from 'src/components/icons/IconForumChannel.svelte';
+	import IconForumChannelNsfw from 'src/components/icons/IconForumChannelNsfw.svelte';
 	import IconNewsChannel from 'src/components/icons/IconNewsChannel.svelte';
+	import IconNewsChannelWithThreads from 'src/components/icons/IconNewsChannelWithThreads.svelte';
+	import IconNewsChannelNsfw from 'src/components/icons/IconNewsChannelNsfw.svelte';
+	import IconNewsChannelWithThreadsNsfw from 'src/components/icons/IconNewsChannelWithThreadsNsfw.svelte';
+	import IconStageChannel from 'src/components/icons/IconStageChannel.svelte';
+	import IconRulesChannel from 'src/components/icons/IconRulesChannel.svelte';
 	import { copyTextToClipboard } from '../../js/helpers';
 	import { contextMenuItems, isMenuHidden } from '../menu/menuStore';
 	export let guildId;
@@ -11,6 +21,8 @@
 	export let isSelected = false;
 	export let threadCount = 0;
 	export let type;
+	export let nsfw;
+	export let isRulesChannel;
 
 	function onRightClick(e, id) {
 		$contextMenuItems = [
@@ -36,16 +48,60 @@
 >
 	<div title="{name}" class="channel" class:selected={isSelected} on:click={()=>$isMenuHidden=true}>
 		<div class="channel-icon">
-		{#if threadCount > 0}
+			<!-- check for type first then check for threads or not and then nsfw or not -->
+			{#if type == "GuildTextChat"} 
+				{#if isRulesChannel}
+					<IconRulesChannel/>
+				{:else}
+					{#if nsfw}
+						{#if threadCount > 0}
+							<IconChannelWithThreadsNsfw />
+						{:else}
+							<IconChannelNsfw />
+						{/if}
+					{:else if !nsfw}
+						{#if threadCount > 0}
+							<IconChannelWithThreads />
+						{:else}
+							<IconChannel />
+						{/if}
+					{/if}
+				{/if}
+			{:else if type == "GuildVoiceChat" && nsfw}
+					<IconVoiceChannelNsfw />
+			{:else if type == "GuildVoiceChat" && !nsfw}
+					<IconVoiceChannel />
+			{:else if type == "GuildNews" && nsfw}
+				{#if threadCount > 0}
+					<IconNewsChannelWithThreadsNsfw />
+				{:else}
+					<IconNewsChannelNsfw />
+				{/if}
+			{:else if type == "GuildNews" && !nsfw}
+				{#if threadCount > 0}
+					<IconNewsChannelWithThreads />
+				{:else}
+					<IconNewsChannel />
+				{/if}
+			{:else if type == "GuildForum" && nsfw}
+				<IconForumChannelNsfw />
+			{:else if type == "GuildForum" && !nsfw}
+			<IconForumChannel />
+			{:else if type == "GuildStageVoice"}
+				<IconStageChannel />
+			{:else}
+				<IconChannel />
+			{/if}
+
+		<!-- {#if threadCount > 0}
 			<IconChannelWithThreads />
 		{:else if type == "GuildVoiceChat"}
-		<!-- Would be nice if DiscordChatExporter also export the nsfw boolean so we can have the other types of channel icons. I will Add forum icon eventually -->
 			<IconVoiceChannel />
 			{:else if type == "GuildNews"}
 			<IconNewsChannel/>
 			{:else}
 			<IconChannel />
-		{/if}
+		{/if} -->
 	</div>
 		<div class="thread-name" class:selected={isSelected}>
 			{name}
